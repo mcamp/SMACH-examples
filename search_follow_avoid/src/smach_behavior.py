@@ -1,6 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import roslib;
 import rospy
 import smach
 import smach_ros
@@ -8,6 +7,7 @@ import smach_ros
 from std_msgs.msg import Empty
 from search_follow_avoid.msg import WObject
 from search_follow_avoid.msg import FollowAction, FollowGoal, AvoidAction, AvoidGoal
+from states import MultipleMonitorState
 
 class Search(MultipleMonitorState):
     def __init__(self):
@@ -22,20 +22,20 @@ class Search(MultipleMonitorState):
         self.stop.publish()
 
     def on_receive(self, msg):
-        if(msg.color == 'red')
+        if(msg.color == 'red'):
             return 'red'
-        elif(msg.color=='yellow')
+        elif(msg.color=='yellow'):
             return 'yellow'
         return None
 
 class Wait(MultipleMonitorState):
     def __init__(self):
-        super().__init__("/object", WObject, timeout=5000, outcomes=['red','yellow'])
+        super().__init__("/object", WObject, timeout=5, outcomes=['red','yellow'])
 
     def on_receive(self, msg):
-        if(msg.color == 'red')
+        if(msg.color == 'red'):
             return 'red'
-        elif(msg.color=='yellow')
+        elif(msg.color=='yellow'):
             return 'yellow'
         return None
 
@@ -58,8 +58,7 @@ class Avoid(smach_ros.SimpleActionState):
 def main():
     rospy.init_node('follow_avoid')
 
-
-    sm = smach.StateMachine()
+    sm = smach.StateMachine(outcomes=['aborted', 'preempted'])
     with sm:
         smach.StateMachine.add('Search', Search(),
                                 transitions={'red':'Follow',
@@ -69,9 +68,10 @@ def main():
         smach.StateMachine.add('Avoid', Avoid(),
                                 transitions={'succeeded':'Wait'})
         smach.StateMachine.add('Wait', Wait(),
-                                transitions={'red':'Follow',
-                                            'yellow':'Avoid',
-                                            'timeout':'Search'})
+                        transitions={'red':'Follow',
+                                    'yellow':'Avoid',
+                                    'timeout':'Search'})
+
    
     sis = smach_ros.IntrospectionServer('task_viz', sm, '/follow_avoid')
     sis.start()
