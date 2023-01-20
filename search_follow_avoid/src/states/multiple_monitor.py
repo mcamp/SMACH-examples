@@ -22,6 +22,7 @@ class MultipleMonitorState(smach.State):
         self._trigger_event.clear()
         self._sub = rospy.Subscriber(self._topic, self._msg_type, self._cb)
 
+        self.on_start()
         if(not self._timeout.is_zero()):
             while self._outcome is None:
                 if rospy.Time.now() - start_time > self._timeout: 
@@ -32,6 +33,7 @@ class MultipleMonitorState(smach.State):
             self._trigger_event.wait()
 
         self._sub.unregister()
+        self.on_exit()
         return self._outcome
 
     def _cb(self,msg):
@@ -44,4 +46,10 @@ class MultipleMonitorState(smach.State):
             self._trigger_event.set()
 
     def on_receive(self, msg):
+        pass
+
+    def on_start(self):
+        pass
+
+    def on_exit(self):
         pass

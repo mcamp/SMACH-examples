@@ -68,9 +68,10 @@ def main():
         smach.StateMachine.add('Avoid', Avoid(),
                                 transitions={'succeeded':'Wait'})
         smach.StateMachine.add('Wait', Wait(),
-                        transitions={'red':'Follow',
-                                    'yellow':'Avoid',
-                                    'timeout':'Search'})
+                                transitions={'red':'Follow',
+                                            'yellow':'Avoid',
+                                            'timeout':'Search'})
+
 
    
     sis = smach_ros.IntrospectionServer('task_viz', sm, '/follow_avoid')
