@@ -1,2 +1,3 @@
-# SMACH-examples
-SMACH Examples
+# SMACH examples
+
+Repository of SMACH examples divided in ROS nodes
